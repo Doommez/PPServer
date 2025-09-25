@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createUserDto: Prisma.UserCreateInput) {
+    const existUser = await this.prisma.user.findUnique({
+      where: {
+        login: createUserDto.login,
+      },
+    })
+
+    if (existUser) {
+      throw new HttpException(
+        'Пользователь с таким логином существует',
+        HttpStatus.BAD_REQUEST,
+      )
+    }
+    return this.prisma.user.create({ data: createUserDto })
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      include: {
+        roles: true,
+      },
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async getUserByLogin(login: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        login,
+      },
+    })
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async getAllRoles() {
+    return this.prisma.role.findMany()
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async createRole(role: string) {
+    return this.prisma.role.create({
+      data: {
+        name: role,
+      },
+    })
   }
 }

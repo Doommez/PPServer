@@ -1,34 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Body, Controller, Post, Res } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { RegisterAuthDto } from './dto/register-auth.dto'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { LoginAuthDto } from './dto/login-auth.dto'
+import { Response } from 'express'
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @Post('register')
+  async register(@Body() registerDto: RegisterAuthDto) {
+    return await this.authService.registration(registerDto)
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
+  @ApiOperation({ summary: 'Авторизация пользователя' })
+  @Post('login')
+  async login(
+    @Body() loginDto: LoginAuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.login(loginDto)
+    res.cookie('access_token', tokens.token, {
+      httpOnly: true, // нельзя прочитать из JS
+      secure: true, // только по HTTPS
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 15, // 15 минут
+    })
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
+    // Можно вернуть refreshToken в теле или тоже в cookie
+    res.cookie('refresh_token', tokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 дней
+    })
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+    return tokens
   }
 }

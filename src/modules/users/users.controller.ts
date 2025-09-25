@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common'
+import { UsersService } from './users.service'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Prisma } from '@prisma/client'
 
 @Controller('users')
+@ApiTags('Пользователи')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiOperation({
+    summary: 'Создание пользователя',
+  })
+  @Post('create')
+  create(@Body() createUserDto: Prisma.UserCreateInput) {
+    return this.usersService.create(createUserDto)
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @ApiOperation({
+    summary: 'Создать роли',
+  })
+  @Post('create/role')
+  async createRole(@Query('role') createRoleDto: string) {
+    return this.usersService.createRole(createRoleDto)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @ApiOperation({
+    summary: 'Получить все роли',
+  })
+  @Get('all/roles')
+  async getAllRoles() {
+    return this.usersService.getAllRoles()
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @ApiOperation({
+    summary: 'Получить всех пользователей',
+  })
+  @Get('all')
+  async getAll() {
+    return this.usersService.getAllUsers()
   }
 }

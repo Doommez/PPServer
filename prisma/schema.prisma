@@ -1,20 +1,26 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
-
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String?
-  login String @unique @db.VarChar(255)
-  hash String @db.VarChar(255)
+  id        Int      @id @default(autoincrement())
+  name      String?
+  login     String   @unique @db.VarChar(255)
+  hash      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  roles     Role[]
 }
 
-
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
