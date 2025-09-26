@@ -4,6 +4,7 @@ import { RegisterAuthDto } from './dto/register-auth.dto'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { LoginAuthDto } from './dto/login-auth.dto'
 import { Response } from 'express'
+import { IsPublic } from '../../decorators/SkipAuth.decorator'
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -17,6 +18,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Авторизация пользователя' })
+  @IsPublic()
   @Post('login')
   async login(
     @Body() loginDto: LoginAuthDto,

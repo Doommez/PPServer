@@ -6,6 +6,8 @@ import * as process from 'node:process'
 import { UsersModule } from './modules/users/users.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { AuthGuard } from './guards/AuthGuard/jwt-auth.guard'
+import { APP_GUARD } from '@nestjs/core'
 
 @Module({
   imports: [
@@ -21,6 +23,6 @@ import { AuthModule } from './modules/auth/auth.module'
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
 })
 export class AppModule {}
