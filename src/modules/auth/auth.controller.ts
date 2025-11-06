@@ -42,4 +42,18 @@ export class AuthController {
 
     return tokens
   }
+
+  @Post('logout')
+  logout(@Res() res: Response) {
+    // Удаляем cookie, установив её с истёкшим сроком
+    res.cookie('access_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: new Date(0), // делает cookie просроченной
+      path: '/',
+    })
+
+    return res.send({ message: 'Logged out successfully' })
+  }
 }
