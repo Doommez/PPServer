@@ -8,21 +8,23 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String?
-  login     String   @unique @db.VarChar(255)
-  hash      String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  login     String    @unique @db.VarChar(255)
+  hash      String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   roles     Role[]
+  Comment   Comment[]
 }
 
 model Post {
-  id_post  Int      @id @default(autoincrement())
+  idPost   Int       @id @default(autoincrement())
   title    String?
-  createAt DateTime @default(now())
-  updateAt DateTime @default(now())
+  createAt DateTime  @default(now())
+  updateAt DateTime  @default(now()) @updatedAt
   autchor  String?
+  Comment  Comment[]
 }
 
 model Role {
@@ -31,4 +33,13 @@ model Role {
   users     User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Comment {
+  idComment Int    @id @default(autoincrement())
+  body      String
+  authorId  Int
+  postId    Int
+  author    User   @relation(fields: [authorId], references: [id])
+  post      Post   @relation(fields: [postId], references: [idPost])
 }

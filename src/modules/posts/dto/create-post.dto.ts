@@ -4,11 +4,15 @@ import { ApiProperty } from '@nestjs/swagger'
 export class CreatePost {
   @ApiProperty({
     name: 'title',
-    description: 'Title of the post',
+    description: 'Наименование поста',
   })
   @IsString()
   title?: string
 
+  @ApiProperty({
+    name: 'author',
+    description: 'авторы',
+  })
   @IsString()
-  autchor?: string
+  author?: string
 }
