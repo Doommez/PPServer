@@ -8,7 +8,7 @@ export class RegisterAuthDto {
     description: 'Логин пользователя',
   })
   @IsString()
-  login: string
+  username: string
 
   @ApiProperty({
     example: 'Evgenii',

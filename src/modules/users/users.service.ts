@@ -9,7 +9,7 @@ export class UsersService {
   async create(createUserDto: Prisma.UserCreateInput) {
     const existUser = await this.prisma.user.findUnique({
       where: {
-        login: createUserDto.login,
+        username: createUserDto.username,
       },
     })
 
@@ -30,10 +30,10 @@ export class UsersService {
     })
   }
 
-  async getUserByLogin(login: string) {
+  async getUserByLogin(username: string) {
     return this.prisma.user.findUnique({
       where: {
-        login,
+        username,
       },
     })
   }

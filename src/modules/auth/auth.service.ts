@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   async registration(registerDto: RegisterAuthDto) {
-    const candidate = await this.userService.getUserByLogin(registerDto.login)
+    const candidate = await this.userService.getUserByLogin(registerDto.username)
     if (candidate) {
       throw new BadRequestException({
         message: 'Пользователь с таким логином уже существует!',
@@ -57,10 +57,10 @@ export class AuthService {
     }
   }
 
-  async validateUser(registerDto: { login: string; password: string }) {
+  async validateUser(registerDto: { username: string; password: string }) {
     const user = await this.prisma.user.findUnique({
       where: {
-        login: registerDto.login,
+        username: registerDto.username,
       },
     })
 
