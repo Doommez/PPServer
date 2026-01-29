@@ -9,7 +9,6 @@ import { Observable } from 'rxjs'
 import { JwtService } from '@nestjs/jwt'
 import { Reflector } from '@nestjs/core'
 import { IS_PUBLIC } from '../../decorators/SkipAuth.decorator'
-import { User } from '@prisma/client'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
